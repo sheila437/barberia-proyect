@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administración de Clientes - Barbería y Peluquería TEO</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .admin-container {
+      margin-top: 50px;
+    }
+    .table-container {
+      margin-top: 30px;
+    }
+    .truncate-text {
+      white-space: nowrap;       
+      overflow: hidden;          
+      text-overflow: ellipsis;   
+      max-width: 200px;       
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/admin">Barbería y Peluquería TEO - Admin</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+      </div>
+    </div>
+  </nav>
+
+  <div class="container admin-container">
+    <h1 class="text-center">Administración de Clientes</h1>
+
+    <div class="d-flex justify-content-between align-items-center mt-4">
+      <form>
+        <input name="search" type="search" class="form-control w-150" id="search" placeholder="Buscar cliente por nombre">
+      </form>
+      <button class="btn btn-success ms-3" data-bs-toggle="modal" data-bs-target="#addClientModal">Añadir Cliente</button>
+    </div>
+
+    <div class="table-container">
+      <table class="table table-hover mt-3">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido Paterno</th>
+            <th>Apellido Materno</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Contraseña</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for client in clients %}
+            <tr>
+              <td>{{ client.id }}</td>
+              <td>{{ client.name }}</td>
+              <td>{{ client.last_name_pat }}</td>
+              <td>{{ client.last_name_mat }}</td>
+              <td>{{ client.phone }}</td>
+              <td>{{ client.email }}</td>
+              <td class="truncate-text">{{ client.password }}</td>
+              <td>
+                <button onclick="editClient('{{ client.id }}', '{{ client.name }}', '{{ client.last_name_pat }}', '{{ client.last_name_mat }}', '{{ client.phone }}', '{{ client.email }}', '{{ client.password }}')" 
+                        class="btn btn-warning btn-sm" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#editClientModal">Editar</button>
+                <button onclick="deleteClient('{{ client.id }}')" class="btn btn-danger btn-sm">Eliminar</button>
+            </td>
+            
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="addClientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addClientModalLabel">Añadir Cliente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addClientForm">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="new_name" class="form-label">Nombre</label>
+                  <input type="text" class="form-control" id="new_name" placeholder="Nombre" required>
+                </div>
+                <div class="mb-3">
+                  <label for="new_last_name_pat" class="form-label">Apellido Materno</label>
+                  <input type="text" class="form-control" id="new_last_name_pat" placeholder="Apellido Materno">
+                </div>
+                <div class="mb-3">
+                  <label for="new_email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="new_email" placeholder="Correo Electrónico" required>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="new_last_name_mat" class="form-label">Apellido Paterno</label>
+                  <input type="text" class="form-control" id="new_last_name_mat" placeholder="Apellido Paterno">
+                </div>
+                <div class="mb-3">
+                  <label for="new_phone" class="form-label">Teléfono</label>
+                  <input type="text" class="form-control" id="new_phone" placeholder="Teléfono">
+                </div>
+                <div class="mb-3">
+                  <label for="new_password" class="form-label">Contraseña</label>
+                  <input type="text" class="form-control" id="new_password" placeholder="Contraseña" required>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Cliente</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="editClientModal" tabindex="-1" aria-labelledby="editClientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editClientModalLabel">Editar Cliente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editClientForm">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit_name" class="form-label">Nombre</label>
+                  <input type="text" class="form-control" id="edit_name" required>
+                </div>
+                <div class="mb-3">
+                  <label for="edit_apellido_materno" class="form-label">Apellido Materno</label>
+                  <input type="text" class="form-control" id="edit_apellido_materno">
+                </div>
+                <div class="mb-3">
+                  <label for="edit_email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="edit_email" required>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="edit_apellido_paterno" class="form-label">Apellido Paterno</label>
+                  <input type="text" class="form-control" id="edit_apellido_paterno">
+                </div>
+                <div class="mb-3">
+                  <label for="edit_telefono" class="form-label">Teléfono</label>
+                  <input type="text" class="form-control" id="edit_telefono">
+                </div>
+                <div class="mb-3">
+                  <label for="edit_password" class="form-label">Contraseña</label>
+                  <input type="text" class="form-control" id="edit_password" required>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" name="id" id="id">
+            <input type="hidden" name="old_password" id="old_password">
+            <button type="submit" class="btn btn-primary">Actualizar Cliente</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function editClient(id, nombre, apellido_paterno, apellido_materno, telefono, email, password) {
+      document.getElementById('id').value = id; 
+      document.getElementById('edit_name').value = nombre;
+      document.getElementById('edit_apellido_paterno').value = apellido_paterno;
+      document.getElementById('edit_apellido_materno').value = apellido_materno;
+      document.getElementById('edit_telefono').value = telefono;
+      document.getElementById('edit_email').value = email;
+      document.getElementById('edit_password').value = password;
+      document.getElementById('old_password').value = password;
+    }
+
+    async function deleteClient(id) {
+      if(!confirm(`¿Estás seguro de eliminar el cliente con ID ${id}?`)) {
+        return;
+      }
+
+      const response = await fetch(`/api/clientes/${id}`, {
+        method: 'DELETE'
+      });
+
+      const { error, message } = await response.json();
+
+      if (error) {
+        alert(error);
+      } else {
+        alert(message);
+        window.location.href = '/admin/clientes';
+      }
+    }
+
+    document.getElementById('addClientForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('new_name').value;
+      const last_name_pat = document.getElementById('new_last_name_pat').value;
+      const last_name_mat = document.getElementById('new_last_name_mat').value;
+      const phone = document.getElementById('new_phone').value;
+      const email = document.getElementById('new_email').value;
+      const password = document.getElementById('new_password').value;
+      
+      const response = await fetch('/api/clientes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name,
+          last_name_pat,
+          last_name_mat,
+          phone,
+          email,
+          password
+        })
+      });
+
+      const { error, message } = await response.json();
+      
+      if (error) {
+        alert(error);
+      } else {
+        alert(message);
+        window.location.href = '/admin/clientes';
+      }
+    });
+
+    document.getElementById('editClientForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const id = document.getElementById('id').value
+      const edit_name = document.getElementById('edit_name').value;
+      const edit_apellido_paterno = document.getElementById('edit_apellido_paterno').value;
+      const edit_apellido_materno = document.getElementById('edit_apellido_materno').value;
+      const edit_telefono = document.getElementById('edit_telefono').value;
+      const edit_email = document.getElementById('edit_email').value;
+      const edit_password = document.getElementById('edit_password').value;
+      const old_password = document.getElementById('old_password').value;
+
+      const response = await fetch(`/api/clientes/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: edit_name,
+          last_name_pat: edit_apellido_paterno,
+          last_name_mat: edit_apellido_materno,
+          phone: edit_telefono,
+          email: edit_email,
+          password: edit_password,
+          old_password
+        })
+      })
+
+      const { error, message } = await response.json();
+
+      if (error) {
+        alert(error);
+      } else {
+        alert(message);
+        window.location.href = '/admin/clientes';
+      }
+    });
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
